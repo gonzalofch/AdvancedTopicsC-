@@ -1,5 +1,10 @@
 ﻿using System.Diagnostics;
+using GenericsBasics.GenericsExample.WithGenerics;
+using GenericsBasics.GenericsExample.WOutGenerics;
 using Microsoft.VisualBasic.CompilerServices;
+using GenericsBasics.MathOperationExample;
+using Car = GenericsBasics.GenericsExample.WOutGenerics.Car;
+using Person = GenericsBasics.GenericsExample.WOutGenerics.Person;
 
 namespace GenericsBasics;
 
@@ -32,12 +37,12 @@ class Program
         List<string> listaStrings = ["1", "dos", "adssdd", "mondongo", "palabras"];
         List<float> listaFloats = [3.3f, 5.5f, 3];
         List<double> listaDoubles = [3.4, 5.5, 6.6, 7.7, 2];
-        
+
         Printer.PrintListWithTypes(listaEnteros);
         Printer.PrintListWithTypes(listaStrings);
         Printer.PrintListWithTypes(listaFloats);
         Printer.PrintListWithTypes(listaDoubles);
-        
+
         //Tambien se le pueden pasar object
         List<object> listaObjetos = [new List<int>[2, 3, 4], "PALABRAS", 4.4, 10000, null, new HttpClient()];
         //Pero es ineficiente,
@@ -64,5 +69,51 @@ class Program
 
         sw.Stop();
         Console.WriteLine($"Time Elapsed List<int>: {sw.ElapsedMilliseconds}");
+
+
+        /**
+         * GenericList Microsoft Example:
+         */
+        GenericList<int> list1 = new GenericList<int>();
+        list1.Add(1);
+
+        // Declare a list of type string.
+        GenericList<string> list2 = new GenericList<string>();
+        list2.Add("");
+
+        // Declare a list of type ExampleClass.
+        GenericList<ExampleClass> list3 = new GenericList<ExampleClass>();
+        list3.Add(new ExampleClass());
+
+
+        /*
+         * MathOperations::::
+         *
+         */
+        MathOperations<int> intOperations = new MathOperations<int>();
+        Console.WriteLine("Integer");
+        Console.WriteLine(intOperations.Add(5, 3));
+        /*Operaciones que no permite debido a ser necesariamente tipo int*/
+        // Console.WriteLine(intOperations.Add(5.2,4));  
+        // Console.WriteLine(intOperations.Add(5.0m, 3));
+        MathOperations<decimal> decimalOperations = new MathOperations<decimal>();
+        Console.WriteLine("Decimal");
+        Console.WriteLine(decimalOperations.Add(4.4m, 10.1m));
+
+
+        /*GENERICS EXAMPLE  W/WO generics*/
+        /*wout generics*/
+        OperationResult operationResult = new OperationResult();
+        Person person = operationResult.Person;
+
+        OperationResultCar operationResultCar = new OperationResultCar();
+        Car car = operationResultCar.Car;
+
+        /*con generics*/
+        OperationResult<Person> resultPerson = new OperationResult<Person>();
+        Person p = resultPerson.Content;
+
+        OperationResult<Car> resultCar = new OperationResult<Car>();
+        Car c = resultCar.Content;
     }
 }
