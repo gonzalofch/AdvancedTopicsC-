@@ -1,0 +1,19 @@
+﻿Procesos asincronos:
+
+- Definicion de asincrono
+
+
+- Palabras reservadas:
+* async:
+* await 
+
+- Utilización en codigo:
+
+
+- Ventajas sobre metodos síncronos:
+
+
+
+- Definiciones y conceptos dentro del tema:
+* threading: 
+ 
