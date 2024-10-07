@@ -2,6 +2,7 @@
 using StockAnalyzer.Web.Models;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using StockAnalyzer.Core;
 using StockAnalyzer.Core.Domain;
 
 namespace StockAnalyzer.Web.Controllers;
@@ -12,10 +13,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var client = new HttpClient();
-        HttpResponseMessage httpResponseMessage = await client.GetAsync($"{API_URL}/MSFT");
-        var contentData = await httpResponseMessage.Content.ReadAsStringAsync();
-        var data = JsonConvert.DeserializeObject<IEnumerable<StockPrice>>(contentData);
+        var store = new DataStore();
+        var data = await store.GetStockPrices("MSFT");
         return View(data);
     }
 
