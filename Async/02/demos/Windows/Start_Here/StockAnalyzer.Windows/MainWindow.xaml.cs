@@ -60,15 +60,20 @@ public partial class MainWindow : Window
                     data.Add(price);
                 }
 
-                Stocks.ItemsSource = data.Where(_ => _.Identifier == StockIdentifier.Text);
+                //So we will Use the Windows Dispatcher.
+                //Invoke: Executes the specified Action() synchronously on the thread the Dispatcher is associated with. (UI Thread)
+                
+                //We use dispatcher.invoke with light actions
+                Dispatcher.Invoke(() =>
+                {
+                    Stocks.ItemsSource = data.Where(_ => _.Identifier == StockIdentifier.Text);
+                });
+                //Extra: when we are working in a Task we need to be very careful with the synchronous code.
+                // we need to make sure that this part doesn't contain blocking code
             });
         }
         catch (Exception exception)
         {
-            //In this case when task attempt to set Source.ItemsSource with the data
-            // Throws an exception bc the thread where this task is being run is different to
-            // the thread that we want to update (UI Thread);
-            
             Console.WriteLine(exception);
             throw;
         }
