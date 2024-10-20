@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using StockAnalyzer.Core.Domain;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -26,17 +28,22 @@ public partial class MainWindow : Window
     private async void Search_Click(object sender, RoutedEventArgs e)
     {
         BeforeLoadingStockData();
+        // streamReader     
+        var streamReader = new StreamReader(File.OpenRead("StockPrices_Small.csv"));
+        var streamFileContent = streamReader.ReadToEndAsync();
 
-        //creates the httpClient to make the request
-        var client = new HttpClient();
+        // File readlines
+        var lines = File.ReadAllLines("StockPrices_Small.csv");
+        var data = new List<StockPrice>();
+        foreach (var line in lines.Skip(1))
+        {
+            var price = StockPrice.FromCSV(line);
+            data.Add(price);
+        }
 
-        var data = await GetStocksAsync(client);
-
-        //Updates the grid and displays the data in the form
-        Stocks.ItemsSource = data;
-
-        //esto solo añade mas informacion al final y cierra el proceso de carga de la barra verde
-        ShowFinalMessage(data);
+        Stocks.ItemsSource = data.Where(_ => _.Identifier == StockIdentifier.Text);
+        
+        AfterLoadingStockData();
     }
 
     private void ShowFinalMessage(IEnumerable<StockPrice> data)
