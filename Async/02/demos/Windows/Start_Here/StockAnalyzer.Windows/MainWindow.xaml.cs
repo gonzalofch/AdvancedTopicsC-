@@ -27,7 +27,18 @@ public partial class MainWindow : Window
 
     private void Search_Click(object sender, RoutedEventArgs e)
     {
-        //
+        //Now will do this method using tasks
+        /*Tasks
+         Allow us to execute work in different threads
+         Get the result of an Asynchronous operation
+         Subscribe to when the operation is donde by introducing a continuation
+         Can tell u when is an exception
+         
+         Form:   
+            Task.Run(()=> {"anonymous operation "})
+            Task.Run(MethodNameHere);
+            
+         */
         BeforeLoadingStockData();
         // streamReader     
         var streamReader = new StreamReader(File.OpenRead("StockPrices_Small.csv"));
