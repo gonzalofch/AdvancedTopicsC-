@@ -33,28 +33,46 @@ public partial class MainWindow : Window
          Get the result of an Asynchronous operation
          Subscribe to when the operation is donde by introducing a continuation
          Can tell u when is an exception
-         
-         Form:   
-            Task.Run(()=> {"anonymous operation "})
-            Task.Run(MethodNameHere);
-            
-         */
-        BeforeLoadingStockData();
-        // streamReader     
-        var streamReader = new StreamReader(File.OpenRead("StockPrices_Small.csv"));
-        var streamFileContent = streamReader.ReadToEndAsync();
 
-        // File readlines
-        var lines = File.ReadAllLines("StockPrices_Small.csv");
-        var data = new List<StockPrice>();
-        foreach (var line in lines.Skip(1))
+         Form:
+            Task.Run(()=> {"anonymous operation "});
+            Task.Run(MethodNameHere);
+
+         Generic vs Non Generic Task.Run:
+            Task<T> task = Task.Run<T>(()=>
+                {
+                "operation"
+                return new T();
+                };
+            Task task = Task.Run(()=>{ });
+         */
+
+        BeforeLoadingStockData();
+        try
         {
-            var price = StockPrice.FromCSV(line);
-            data.Add(price);
+            Task.Run(() =>
+            {
+                var lines = File.ReadAllLines("StockPrices_Small.csv");
+                var data = new List<StockPrice>();
+                foreach (var line in lines.Skip(1))
+                {
+                    var price = StockPrice.FromCSV(line);
+                    data.Add(price);
+                }
+
+                Stocks.ItemsSource = data.Where(_ => _.Identifier == StockIdentifier.Text);
+            });
+        }
+        catch (Exception exception)
+        {
+            //In this case when task attempt to set Source.ItemsSource with the data
+            // Throws an exception bc the thread where this task is being run is different to
+            // the thread that we want to update (UI Thread);
+            
+            Console.WriteLine(exception);
+            throw;
         }
 
-        Stocks.ItemsSource = data.Where(_ => _.Identifier == StockIdentifier.Text);
-        
         AfterLoadingStockData();
     }
 
