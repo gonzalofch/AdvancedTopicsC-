@@ -12,7 +12,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IDataAccess, EfDataAccess>();
 builder.Services.AddMediatR(typeof(DemoLibrayMediatrEntryPoint).Assembly);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

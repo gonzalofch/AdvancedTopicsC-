@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Core;
 using DemoLibrary.Model;
 
 namespace DemoLibrary.DataAccess
@@ -21,6 +22,11 @@ namespace DemoLibrary.DataAccess
         public List<PersonModel> GetPeople()
         {
             return people;
+        }
+
+        public PersonModel GetPersonById(int id)
+        {
+            return people.FirstOrDefault(p => p.Id == id);
         }
 
         public PersonModel InsertPerson(string firstName, string lastName)
