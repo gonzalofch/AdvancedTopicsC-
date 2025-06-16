@@ -3,12 +3,16 @@ using Newtonsoft.Json;
 using StockAnalyzer.Core.Domain;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Navigation;
+using StockAnalyzer.Core;
 
 namespace StockAnalyzer.Windows;
 
@@ -23,29 +27,31 @@ public partial class MainWindow : Window
     }
 
 
-    private async void Search_Click(object sender, RoutedEventArgs e)
+    private void Search_Click(object sender, RoutedEventArgs e)
     {
-        BeforeLoadingStockData();
-
-        //creates the httpClient to make the request
-        var client = new HttpClient();
-
-        var data = await GetStocksAsync(client);
-
-        //Updates the grid and displays the data in the form
-        Stocks.ItemsSource = data;
-
-        //esto solo añade mas informacion al final y cierra el proceso de carga de la barra verde
-        ShowFinalMessage(data);
-    }
-
-    private void ShowFinalMessage(IEnumerable<StockPrice> data)
-    {
-        if (data is null)
+        try
         {
-            FailedOperation();
+            BeforeLoadingStockData();
+
+            //example reading the file stockprinces.csv
+            var lines = File.ReadAllLines("StockPrices_Small.csv");
+            //simular que tarda mucho en traerse las filas del archivo
+            Thread.Sleep(3000);
+            var data = new List<StockPrice>();
+
+            foreach (var line in lines.Skip(1))
+            {
+                var price = StockPrice.FromCSV(line);
+                data.Add(price);
+            }
+
+            Stocks.ItemsSource = data.Where(sp => sp.Identifier == StockIdentifier.Text);
         }
-        else
+        catch (Exception exception)
+        {
+            Notes.Text = exception.Message;
+        }
+        finally
         {
             AfterLoadingStockData();
         }
@@ -61,41 +67,6 @@ public partial class MainWindow : Window
     private void AfterLoadingStockData()
     {
         StocksStatus.Text = $"Loaded stocks for {StockIdentifier.Text} in {stopwatch.ElapsedMilliseconds}ms";
-        StockProgress.Visibility = Visibility.Hidden;
-    }
-
-    private async Task<IEnumerable<StockPrice>> GetStocksAsync(HttpClient client)
-    {
-        //uses the client / calls the api url in order to get a HttpResponse 
-        //StockIdentifier is the string passed by windows form input
-        //This Obtains a Task<HttpResponseMessage>
-
-        // await , waits for return value of GetAsyncMethod (the HttpResponseMessage Itself)
-
-        //here we are entering into the attributes of HttpResponseMessage, 
-        //In this case is content, has all the data in Json ready to be parsed to present in UI
-
-        //This awaits for the process of parse JSON data to String asynchronously
-
-        //Use the Library Method JsonConvert to Deserialize in an IEnumerable of StockPrices objects
-        // returns this list of stockPrices 
-        try
-        {
-            HttpResponseMessage? httpmessage = await client.GetAsync($"{API_URL}/{StockIdentifier.Text}");
-            var contentData = await httpmessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<StockPrice>>(contentData);
-        }
-        catch (Exception e)
-        {
-            throw new Exception();
-        }
-    }
-
-    private void FailedOperation()
-    {
-        StocksStatus.Text =
-            $"The Operation has failed searching for {StockIdentifier.Text} in {stopwatch.ElapsedMilliseconds}ms";
-
         StockProgress.Visibility = Visibility.Hidden;
     }
 
